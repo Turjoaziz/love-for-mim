@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For Mim Jahan</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top, #1b1331 0%, #0b1020 45%, #050814 100%);
+      font-family: Arial, Helvetica, sans-serif;
+      overflow: hidden;
+      color: #111;
+    }
+
+    .scene {
+      width: min(92vw, 980px);
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(180deg, #fffdfd, #fff 60%, #fff7fb);
+      border-radius: 42px;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+
+    .glow {
+      position: absolute;
+      inset: auto;
+      width: 280px;
+      height: 280px;
+      right: -60px;
+      top: -60px;
+      background: radial-gradient(circle, rgba(255, 109, 149, 0.22), rgba(255,255,255,0));
+      pointer-events: none;
+    }
+
+    .title {
+      position: absolute;
+      top: 28px;
+      width: 100%;
+      text-align: center;
+      font-size: clamp(24px, 4vw, 50px);
+      font-style: italic;
+      color: rgba(20, 20, 20, 0.78);
+      letter-spacing: 1px;
+      z-index: 2;
+      user-select: none;
+    }
+
+    .love-note {
+      position: absolute;
+      top: 92px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(76%, 680px);
+      min-height: 54px;
+      text-align: center;
+      font-size: clamp(14px, 1.7vw, 22px);
+      line-height: 1.5;
+      color: #5e2336;
+      z-index: 4;
+      padding: 0 8px;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 1ch;
+      animation: blink 0.8s infinite;
+    }
+
+    .stickman {
+      position: absolute;
+      left: 8%;
+      bottom: 15%;
+      width: clamp(130px, 18vw, 185px);
+      height: clamp(165px, 22vw, 235px);
+      z-index: 3;
+    }
+
+    .mini-heart {
+      position: absolute;
+      left: 24%;
+      bottom: 42%;
+      font-size: clamp(22px, 2.4vw, 34px);
+      opacity: 0;
+      transform: scale(0.2);
+      animation: popHeart 5s ease-in-out infinite;
+      z-index: 3;
+      white-space: nowrap;
+    }
+
+    .biu {
+      position: absolute;
+      left: 30%;
+      bottom: 38%;
+      font-size: clamp(15px, 1.8vw, 28px);
+      font-weight: 700;
+      color: #111;
+      opacity: 0;
+      transform: translateY(10px) rotate(-10deg);
+      animation: biuText 5s ease-in-out infinite;
+      z-index: 3;
+      white-space: nowrap;
+    }
+
+    .big-heart {
+      position: absolute;
+      right: 10%;
+      top: 21%;
+      width: min(39vw, 350px);
+      height: min(39vw, 350px);
+      z-index: 2;
+      transition: transform 2.2s ease;
+    }
+
+    .big-heart.float-up {
+      transform: translateY(-34px) scale(1.03);
+    }
+
+    .cell {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      font-size: 30px;
+      opacity: 0;
+      transform: scale(0.1) translateY(30px);
+      animation: appear 0.35s ease forwards;
+      filter: drop-shadow(0 4px 4px rgba(0,0,0,0.12));
+    }
+
+    .sparkle {
+      position: absolute;
+      font-size: 18px;
+      opacity: 0;
+      animation: twinkle 2.8s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .tap-music {
+      position: absolute;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: rgba(17, 24, 39, 0.92);
+      color: #fff;
+      font-size: 14px;
+      z-index: 5;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+      cursor: pointer;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 68px;
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      color: rgba(0,0,0,0.5);
+      z-index: 3;
+    }
+
+    .replay {
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      border: none;
+      background: #111827;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 14px;
+      z-index: 5;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+    }
+
+    .final-card {
+      position: absolute;
+      inset: 0;
+      background: rgba(8, 10, 20, 0.44);
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.45s ease;
+      z-index: 10;
+      padding: 20px;
+    }
+
+    .final-card.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .final-card-inner {
+      width: min(90%, 460px);
+      background: #fff;
+      border-radius: 28px;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.24);
+    }
+
+    .final-card-inner h2 {
+      margin: 0 0 12px;
+      font-size: clamp(24px, 3vw, 34px);
+      color: #c2185b;
+    }
+
+    .final-card-inner p {
+      margin: 0 0 18px;
+      font-size: clamp(15px, 1.9vw, 18px);
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .final-card-inner button {
+      border: none;
+      background: #c2185b;
+      color: #fff;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    @keyframes appear {
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @keyframes popHeart {
+      0%, 8% { opacity: 0; transform: scale(0.2) translate(0, 0); }
+      14%, 32% { opacity: 1; transform: scale(1) translate(0, -4px); }
+      45%, 100% { opacity: 0; transform: scale(1.4) translate(120px, -40px); }
+    }
+
+    @keyframes biuText {
+      0%, 10% { opacity: 0; transform: translateY(8px) rotate(-10deg); }
+      18%, 35% { opacity: 1; transform: translateY(0) rotate(-10deg); }
+      46%, 100% { opacity: 0; transform: translateY(-14px) rotate(-10deg); }
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.15; transform: translateY(0) scale(0.9); }
+      50% { opacity: 1; transform: translateY(-8px) scale(1.1); }
+    }
+
+    @media (max-width: 640px) {
+      .scene { aspect-ratio: 9 / 12; }
+      .title { top: 24px; }
+      .love-note { top: 76px; width: 86%; }
+      .stickman { left: 3%; bottom: 14%; }
+      .mini-heart { left: 30%; bottom: 39%; font-size: 18px; }
+      .biu { left: 36%; bottom: 35%; font-size: 15px; }
+      .big-heart { right: 3%; top: 24%; width: 56vw; height: 56vw; }
+      .cell { width: 26px; height: 26px; font-size: 22px; }
+      .footer { font-size: 12px; bottom: 66px; }
+      .tap-music { font-size: 12px; bottom: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="scene" id="scene">
+    <div class="glow"></div>
+    <div class="title">For Mim Jahan ❤️</div>
+    <div class="love-note"><span id="typed"></span><span class="cursor">|</span></div>
+
+    <svg class="stickman" viewBox="0 0 180 220" fill="none" stroke="#111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="70" cy="45" r="34"></circle>
+      <circle cx="58" cy="45" r="2.8" fill="#111"></circle>
+      <circle cx="82" cy="45" r="2.8" fill="#111"></circle>
+      <path d="M63 58 Q70 64 77 58"></path>
+      <path d="M52 58 Q47 61 44 58" stroke="#f4a8b8"></path>
+      <path d="M88 58 Q93 61 96 58" stroke="#f4a8b8"></path>
+      <path d="M70 79 L70 150"></path>
+      <path d="M70 90 L42 116"></path>
+      <path d="M72 92 L126 84"></path>
+      <path d="M126 84 L138 73"></path>
+      <path d="M127 85 L139 97"></path>
+      <path d="M70 150 L54 190"></path>
+      <path d="M70 150 L86 190"></path>
+      <path d="M54 190 L42 190"></path>
+      <path d="M86 190 L100 190"></path>
+      <path d="M40 111 L40 160"></path>
+      <path d="M40 160 L50 160"></path>
+    </svg>
+
+    <div class="mini-heart">💗 Mim</div>
+    <div class="biu">Turjo → Mim</div>
+
+    <div class="big-heart" id="heart"></div>
+
+    <div class="footer">From Turjo, with love ❤️</div>
+    <div class="tap-music" id="tapMusic">Tap once for music 🎵</div>
+    <button class="replay" onclick="restartAnimation()">Replay</button>
+
+    <div class="final-card" id="finalCard">
+      <div class="final-card-inner">
+        <h2>Mim Jahan ❤️</h2>
+        <p>
+          No matter how many hearts I draw, none of them can hold how much you mean to me.<br>
+          I love you.<br><br>
+          — Turjo
+        </p>
+        <button onclick="closeCard()">Open My Heart Again</button>
+      </div>
+    </div>
+  </div>
+
+  <audio id="bgMusic" loop>
+    <source src="1.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    const rows = [
+      '000111000',
+      '001111100',
+      '011111110',
+      '111111111',
+      '011111110',
+      '001111100',
+      '000111000',
+      '000111000',
+      '000010000'
+    ];
+
+    const heart = document.getElementById('heart');
+    const finalCard = document.getElementById('finalCard');
+    const typed = document.getElementById('typed');
+    const music = document.getElementById('bgMusic');
+    const tapMusic = document.getElementById('tapMusic');
+    const message = 'Mim Jahan, every little beat of my heart quietly says your name.';
+    let typeTimer;
+    let popupTimer;
+
+    function addSparkles() {
+      document.querySelectorAll('.sparkle').forEach(el => el.remove());
+      const scene = document.getElementById('scene');
+      const positions = [
+        [78, 24], [72, 36], [82, 48], [18, 22], [24, 70], [64, 18], [88, 26]
+      ];
+      positions.forEach((pos, i) => {
+        const s = document.createElement('div');
+        s.className = 'sparkle';
+        s.textContent = i % 2 === 0 ? '✨' : '💖';
+        s.style.left = pos[0] + '%';
+        s.style.top = pos[1] + '%';
+        s.style.animationDelay = (i * 0.35) + 's';
+        scene.appendChild(s);
+      });
+    }
+
+    function buildHeart() {
+      heart.innerHTML = '';
+      const isMobile = window.innerWidth <= 640;
+      const size = isMobile ? 26 : 36;
+      const gap = isMobile ? 2 : 3;
+      let delay = 0.8;
+
+      rows.forEach((row, r) => {
+        [...row].forEach((cell, c) => {
+          if (cell === '1') {
+            const div = document.createElement('div');
+            div.className = 'cell';
+            div.textContent = '❤️';
+            div.style.left = `${c * (size + gap)}px`;
+            div.style.top = `${r * (size + gap)}px`;
+            div.style.animationDelay = `${delay}s`;
+            heart.appendChild(div);
+            delay += 0.06;
+          }
+        });
+      });
+
+      const totalWidth = rows[0].length * (size + gap) - gap;
+      const totalHeight = rows.length * (size + gap) - gap;
+      heart.style.width = `${totalWidth}px`;
+      heart.style.height = `${totalHeight}px`;
+      heart.classList.remove('float-up');
+      setTimeout(() => heart.classList.add('float-up'), 3800);
+    }
+
+    function typeMessage() {
+      clearInterval(typeTimer);
+      typed.textContent = '';
+      let i = 0;
+      typeTimer = setInterval(() => {
+        typed.textContent += message.charAt(i);
+        i += 1;
+        if (i >= message.length) clearInterval(typeTimer);
+      }, 45);
+    }
+
+    function showCardLater() {
+      clearTimeout(popupTimer);
+      finalCard.classList.remove('show');
+      popupTimer = setTimeout(() => {
+        finalCard.classList.add('show');
+      }, 5400);
+    }
+
+    function closeCard() {
+      finalCard.classList.remove('show');
+      restartAnimation();
+    }
+
+    function restartAnimation() {
+      buildHeart();
+      typeMessage();
+      showCardLater();
+      document.querySelector('.mini-heart').style.animation = 'none';
+      document.querySelector('.biu').style.animation = 'none';
+      void document.querySelector('.mini-heart').offsetWidth;
+      document.querySelector('.mini-heart').style.animation = 'popHeart 5s ease-in-out infinite';
+      document.querySelector('.biu').style.animation = 'biuText 5s ease-in-out infinite';
+    }
+
+    function enableMusic() {
+      music.play().then(() => {
+        tapMusic.style.display = 'none';
+      }).catch(() => {});
+    }
+
+    tapMusic.addEventListener('click', enableMusic);
+    document.body.addEventListener('click', enableMusic, { once: true });
+
+    addSparkles();
+    buildHeart();
+    typeMessage();
+    showCardLater();
+    window.addEventListener('resize', () => { buildHeart(); addSparkles(); });
+  </script>
+</body>
+</html>
